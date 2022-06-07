@@ -59,3 +59,15 @@ ssh:
 	bolt command run "sudo mkdir -p /root/.ssh" --targets=us --run-as root
 	bolt command run "ssh-keyscan github.com | sudo tee -a /root/.ssh/known_hosts" --targets=us --run-as root
 	bolt command run "ssh-keyscan bitbucket.org | sudo tee -a /root/.ssh/known_hosts" --targets=us --run-as root
+
+#
+# install development environment dependencies 
+#
+devenv:
+	./scripts/devenv.sh
+
+#
+# update the nomad binary on all servers and clients if 
+#
+nomad:
+	./scripts/build-nomad.sh

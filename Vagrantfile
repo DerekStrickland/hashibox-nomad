@@ -7,10 +7,16 @@ Vagrant.configure(2) do |config|
   config.vm.box = "bento/ubuntu-21.04"
   config.vm.hostname = "hashibox"
 
+  nomad_src = ENV["NOMAD_SRC"]
+
   # Create 3 nodes acting as servers for Consul, Nomad, and Vault, each exposing
   # a private network.
   (1..3).each do |i|
     config.vm.define "node-server-#{i}" do |node|
+      if nomad_src != '' 
+        node.vm.synced_folder nomad_src, "/home/vagrant/nomad"
+      end
+
       node.vm.hostname = "node-server-#{i}"
       node.vm.network "private_network", ip: "192.168.60.#{i}0"
 
@@ -35,6 +41,10 @@ Vagrant.configure(2) do |config|
   # containers.
   (1..3).each do |i|
     config.vm.define "node-client-#{i}" do |node|
+      if nomad_src != '' 
+        node.vm.synced_folder nomad_src, "/home/vagrant/nomad"
+      end
+
       node.vm.hostname = "node-client-#{i}"
       node.vm.network "private_network", ip: "192.168.61.#{i}0"
 
