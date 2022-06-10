@@ -1,7 +1,5 @@
 #!/bin/bash
 
-CLEAN ?= false
-
 # Fail if Nomad source does not exist.
 if [ ! -d "/home/vagrant/nomad" ]
 then
@@ -22,7 +20,7 @@ fi
 echo "==> Building Nomad..."
 (cd /home/vagrant/nomad && make deps)
 (cd /home/vagrant/nomad && NOMAD_UI_TAG="ui" make dev)
-sudo install /vagrant/home/nomad/bin/nomad /usr/local/bin/nomad
+sudo install /vagrant/home/nomad/bin/nomad /opt/gopath/bin/nomad
 
 # If we made it here, we're done!
 echo "==> Successfully updated Nomad"

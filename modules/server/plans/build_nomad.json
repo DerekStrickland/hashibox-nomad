@@ -1,5 +1,0 @@
-{
-    "description": "Build and update Nomad on targeted nodes",
-    "supports_noop": true,
-    "parameters": {}
-}

@@ -61,10 +61,10 @@ ssh:
 	bolt command run "ssh-keyscan bitbucket.org | sudo tee -a /root/.ssh/known_hosts" --targets=us --run-as root
 
 #
-# install development environment dependencies 
+# install Nomad development environment dependencies 
 #
-devenv:
-	./scripts/devenv.sh
+nomad-devenv:
+	./scripts/nomad-devenv.sh
 
 #
 # update the nomad binary on all servers and clients if 
