@@ -4,9 +4,6 @@
 Vagrant.configure(2) do |config|
 
   # Configure the VM options.
-  config.vm.box = "bento/ubuntu-21.04"
-  config.vm.hostname = "hashibox"
-
   nomad_src = ENV["NOMAD_SRC"]
 
   config.vm.box = "bento/ubuntu-#{ENV['UBUNTU_VERSION']}"
