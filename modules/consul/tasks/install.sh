@@ -1,12 +1,23 @@
 #!/bin/bash
 
+# Read the content of the environment file, which is populated with the
+# `CONSUL_LICENSE`. If a license key is present, Consul Enterprise will be
+# downloaded instead of Consul OSS.
+source /hashibox/.env
+
 # Set Consul version.
 CONSUL_VERSION="1.12.0"
+if [[ ! -z ${CONSUL_LICENSE} ]]; then
+  CONSUL_VERSION+="+ent"
+fi
 
 # Set OS details.
 OS_KIND="linux"
 OS_DISTRO="ubuntu"
 OS_ARCH="amd64"
+case $(uname -m) in
+  aarch64) OS_ARCH="arm64" ;;
+esac
 
 # Download and unzip Consul.
 echo "==> Downloading Consul v${CONSUL_VERSION}..."
@@ -25,8 +36,8 @@ complete -C /usr/local/bin/consul consul
 # Create a unique, non-privileged system user to run Consul and create its data
 # directory.
 sudo useradd --system --shell /bin/false consul
-sudo mkdir --parents /opt/consul
-sudo chown --recursive consul:consul /opt/consul
+sudo mkdir -p /opt/consul
+sudo chown -R consul:consul /opt/consul
 
 # Add the appropriate Consul systemd service.
 sudo cp /hashibox/defaults/consul/consul.service /etc/systemd/system/consul.service

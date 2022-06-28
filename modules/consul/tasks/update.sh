@@ -1,12 +1,23 @@
 #!/bin/bash
 
+# Read the content of the environment file, which is populated with the
+# `CONSUL_LICENSE`. If a license key is present, Consul Enterprise will be
+# downloaded instead of Consul OSS.
+source /hashibox/.env
+
 # Set Consul version.
 CONSUL_VERSION="1.12.0"
+if [[ ! -z ${CONSUL_LICENSE} ]]; then
+  CONSUL_VERSION+="+ent"
+fi
 
 # Set OS details.
 OS_KIND="linux"
 OS_DISTRO="ubuntu"
 OS_ARCH="amd64"
+case $(uname -m) in
+  aarch64) OS_ARCH="arm64" ;;
+esac
 
 # Download and unzip Consul.
 echo "==> Downloading Consul v${CONSUL_VERSION}..."

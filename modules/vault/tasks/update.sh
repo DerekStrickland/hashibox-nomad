@@ -1,12 +1,23 @@
 #!/bin/bash
 
+# Read the content of the environment file, which is populated with the
+# `VAULT_LICENSE`. If a license key is present, Vault Enterprise will be
+# downloaded instead of Vault OSS.
+source /hashibox/.env
+
 # Set Vault version.
-VAULT_VERSION="1.10.3"
+VAULT_VERSION="1.11.0"
+if [[ ! -z ${VAULT_LICENSE} ]]; then
+  VAULT_VERSION+="+ent"
+fi
 
 # Set OS details.
 OS_KIND="linux"
 OS_DISTRO="ubuntu"
 OS_ARCH="amd64"
+case $(uname -m) in
+  aarch64) OS_ARCH="arm64" ;;
+esac
 
 # Download and unzip Vault.
 echo "==> Downloading Vault v${VAULT_VERSION}..."

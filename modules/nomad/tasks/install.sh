@@ -1,13 +1,24 @@
 #!/bin/bash
 
+# Read the content of the environment file, which is populated with the
+# `NOMAD_LICENSE`. If a license key is present, Nomad Enterprise will be
+# downloaded instead of Nomad OSS.
+source /hashibox/.env
+
 # Set Nomad version.
-NOMAD_VERSION="1.3.0"
 CNI_PLUGINS_VERSION="1.0.1"
+NOMAD_VERSION="1.3.0"
+if [[ ! -z ${NOMAD_LICENSE} ]]; then
+  NOMAD_VERSION+="+ent"
+fi
 
 # Set OS details.
 OS_KIND="linux"
 OS_DISTRO="ubuntu"
 OS_ARCH="amd64"
+case $(uname -m) in
+  aarch64) OS_ARCH="arm64" ;;
+esac
 
 # Download and unzip Nomad.
 echo "==> Downloading Nomad v${NOMAD_VERSION}..."
@@ -34,8 +45,8 @@ complete -C /usr/local/bin/nomad nomad
 # Create a unique, non-privileged system user to run Nomad and create its data
 # directory.
 sudo useradd --system --shell /bin/false nomad
-sudo mkdir --parents /opt/nomad
-sudo chown --recursive nomad:nomad /opt/nomad
+sudo mkdir -p /opt/nomad
+sudo chown -R nomad:nomad /opt/nomad
 
 # Write a file to preserve network settings.
 cat > /etc/sysctl.d/20-bridge << EOF
@@ -46,6 +57,10 @@ EOF
 
 # Add the appropriate Nomad systemd service.
 sudo cp /hashibox/defaults/nomad/nomad.service /etc/systemd/system/nomad.service
+
+# Create the data directory used for Waypoint and Nomad's plugins.
+sudo mkdir -p /opt/waypoint
+sudo mkdir -p /opt/nomad/plugins
 
 # If we made it here, we're done!
 echo "==> Successfully installed Nomad"
