@@ -20,18 +20,18 @@ Vagrant.configure(2) do |config|
       node.vm.hostname = "node-server-#{i}"
       node.vm.network "private_network", ip: "192.168.60.#{i}0"
 
-      node.vm.provision "start_servers", type: "shell", after: :all, run: "always" do |s|
-        s.inline = "systemctl restart consul nomad vault"
-      node.vm.hostname = "node-server-#{i}"
-      node.vm.network "private_network", ip: "192.168.60.#{i}0"
-
       node.vm.provider "parallels" do |v|
         v.memory = "#{ENV['VAGRANT_SERVER_RAM']}"
         v.cpus = "#{ENV['VAGRANT_SERVER_CPUS']}"
       end
 
       node.vm.provider "virtualbox" do |v|
-        v.memory = "#{ENV['VAGRANT_SERVER_RAM']}"
+        if i == 1
+          v.memory = 1024
+        else
+          v.memory = "#{ENV['VAGRANT_SERVER_RAM']}"
+        end 
+
         v.cpus = "#{ENV['VAGRANT_SERVER_CPUS']}"
       end
 

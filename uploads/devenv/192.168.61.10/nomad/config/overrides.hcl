@@ -1,9 +1,10 @@
 datacenter = "dc1"
+log_level  = "TRACE"
 
-bind_addr = "192.168.60.10"
+bind_addr = "192.168.61.10"
 
 consul {
-  address = "192.168.60.10:8500"
+  address = "192.168.61.10:8500"
 }
 
 vault {

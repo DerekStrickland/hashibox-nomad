@@ -1,4 +1,5 @@
 datacenter = "dc1"
+log_level  = "TRACE"
 
 bind_addr = "192.168.60.30"
 

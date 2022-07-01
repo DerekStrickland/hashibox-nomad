@@ -90,14 +90,39 @@ ssh:
 	bolt command run "ssh-keyscan github.com | sudo tee -a /root/.ssh/known_hosts" --targets=us --run-as root
 	bolt command run "ssh-keyscan bitbucket.org | sudo tee -a /root/.ssh/known_hosts" --targets=us --run-as root
 
+
+#
+# switch configuration to use dev environment settings
+#
+devconfig:
+	./scripts/devconfig.sh
+	./scripts/dotenv.sh
+	./scripts/restart.sh
+	sleep 5
+	./scripts/unseal.sh	
+
 #
 # install Nomad development environment dependencies 
 #
-nomad-devenv:
+nomad-deps:
 	./scripts/nomad-devenv.sh
 
 #
-# update the nomad binary on all servers and clients if 
+# update the nomad binary on all nodes and clean the data directory.
 #
-nomad:
-	./scripts/build-nomad.sh
+nomad-build:
+	./scripts/build-nomad.sh -b -d
+
+#
+# update the nomad binary on all nodes and without cleaning the data directory.
+#
+nomad-build-only:
+	./scripts/build-nomad.sh -b
+
+#
+# clean the nomad data directory.
+#
+nomad-clean:
+	./scripts/build-nomad.sh -d
+
+
