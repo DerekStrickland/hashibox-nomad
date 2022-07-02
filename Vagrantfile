@@ -26,12 +26,7 @@ Vagrant.configure(2) do |config|
       end
 
       node.vm.provider "virtualbox" do |v|
-        if i == 1
-          v.memory = 1024
-        else
-          v.memory = "#{ENV['VAGRANT_SERVER_RAM']}"
-        end 
-
+        v.memory = "#{ENV['VAGRANT_SERVER_RAM']}"
         v.cpus = "#{ENV['VAGRANT_SERVER_CPUS']}"
       end
 

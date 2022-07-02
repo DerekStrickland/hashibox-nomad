@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Rebuild and deploy the Nomad binary on clients and servers
-
-# TODO: Delete these lines if the bold command approach works.
-# Run the "build-nomad" plan on nomad server and client nodes.
-# bolt plan run server::build_nomad --targets=servers --run-as vagrant --log-level trace
-# bolt plan run client::build_nomad --targets=clients --run-as root
-
 ################################################################################
 # Usage:
 #   build-nomad.sh [--b <rebuild binary>] [--d <clean data_dirs>]
@@ -34,23 +27,47 @@ while getopts 'bd' OPTION; do
 done
 shift "$(($OPTIND -1))"
 
+# Clients need to be drained before we can safely upgrade the binary or clean the data dir
+nomad status | awk -F '\t' 'NR>1{print $1}' | cut -d " " -f1 | while read -r job_id; do
+    echo "==> Purging job $job_id..."
+    nomad job stop -purge $job_id
+done
+
 # Stop Nomad on all the machines. This is needed to make sure the binary is
 # not in use by any other process while building.
+# bolt command run "sudo systemctl disable nomad" --targets=devenv
 bolt command run "sudo systemctl stop nomad" --targets=devenv
 
+# Build the Nomad binary on the host machine.
 if $build_binary; then
-  # 
-  # Build the Nomad binary.
-  bolt command run "cd nomad && make dev && echo 'Dev build nomad version ==>' && bin/nomad -version" --targets=server-1
-  # Copy the binary to the gopath on all the nodes.
-  bolt command run "sudo cp nomad/bin/nomad /usr/local/bin/nomad && echo '/usr/local/bin/nomad version ==>' && nomad -version" --targets=devenv
+    if [[ ${NOMAD_SRC:-"unset"} == "unset" ]]; then
+        echo 'NOMAD_SRC environment variable not set.'
+        exit 1
+    fi
+
+    # Print the current git ref.
+    (cd $NOMAD_SRC && echo "Dev git ref ===>" && git rev-parse HEAD)
+
+    # Build the Nomad binary.
+    (cd $NOMAD_SRC && GOOS=linux GOARCH=amd64 make dev)
+
+    # Print the built binary version.
+    bolt command run "echo \"Built Nomad binary version ==>\" && nomad/pkg/linux_amd64/nomad -version" --targets=server-1
 fi
+
+# Replace the binary in the path on all nodes.
+# bolt command run @scripts/stop-nomad.sh --targets=devenv
+bolt command run "sudo cp nomad/pkg/linux_amd64/nomad /usr/local/bin/nomad && echo '/usr/local/bin/nomad version ==>' && nomad -version" --targets=devenv
+
+# Stat the binaries in output so timestamps can be compared.
+bolt command run "echo \"Built binary stat ==> \" && stat -c '%n %y' nomad/pkg/linux_amd64/nomad && echo \"Path binary stat ==> \" && stat -c '%n %y' /usr/local/bin/nomad" --targets=devenv
+
 
 if $clean_data_dirs; then
-  # Clean the data_dirs on all the nodes.
-  bolt command run "sudo grep /opt/nomad/data /proc/mounts | cut -f2 -d\" \" | sort -r | xargs umount -n" --targets=devenv
+  # Clean the data_dirs on all nodes.
+  bolt command run "sudo grep /opt/nomad/data /proc/mounts | cut -f2 -d\" \" | sort -r | ifne xargs umount -n" --targets=devenv --run-as root
   bolt command run "sudo rm -rf /opt/nomad/data" --targets=devenv --run-as root
-  bolt command run "sudo ls /opt/nomad" --targets=devenv --run-as root
 fi
 
-bolt command run "sudo systemctl start nomad" --targets=devenv --run-as root
+# bolt command run "sudo systemctl enable nomad" --targets=devenv
+bolt command run "sudo systemctl start nomad" --targets=devenv

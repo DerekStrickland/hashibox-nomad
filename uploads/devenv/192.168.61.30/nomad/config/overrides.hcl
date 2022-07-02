@@ -1,5 +1,6 @@
 datacenter = "dc1"
 log_level  = "TRACE"
+data_dir   = "/opt/nomad/data"
 
 bind_addr = "192.168.61.30"
 
