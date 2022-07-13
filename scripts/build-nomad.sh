@@ -65,6 +65,7 @@ bolt command run "echo \"Built binary stat ==> \" && stat -c '%n %y' nomad/pkg/l
 
 if $clean_data_dirs; then
   # Clean the data_dirs on all nodes.
+  echo "==> Cleaning data_dirs..."
   bolt command run "sudo grep /opt/nomad/data /proc/mounts | cut -f2 -d\" \" | sort -r | ifne xargs umount -n" --targets=devenv --run-as root
   bolt command run "sudo rm -rf /opt/nomad/data" --targets=devenv --run-as root
 fi

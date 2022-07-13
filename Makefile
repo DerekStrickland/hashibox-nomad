@@ -93,6 +93,7 @@ ssh:
 
 #
 # switch configuration to use dev environment settings
+# this is an analog to sync but for the dev environment
 #
 devconfig:
 	./scripts/devconfig.sh
