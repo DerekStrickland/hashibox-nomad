@@ -7,29 +7,35 @@ bind_addr = "192.168.61.30"
 client {
   template {
     error_mode       = "noop"
-    max_stale        = "5s"
-    block_query_wait = "90s"
+    max_stale        = "0s"
+    block_query_wait = "10s"
 
     wait {
       min = "2s"
-      max = "60s"
+      max = "5s"
     }
 
     wait_bounds {
       min = "2s"
-      max = "60s"
+      max = "5s"
     }
 
     consul_retry {
-      attempts    = 1
-      backoff     = "5s"
-      max_backoff = "10s"
+      attempts    = 0
+      backoff     = "2s"
+      max_backoff = "5s"
     }
 
     vault_retry {
-      attempts    = 1
-      backoff     = "15s"
-      max_backoff = "20s"
+      attempts    = 0
+      backoff     = "2s"
+      max_backoff = "5s"
+    }
+
+    nomad_retry {
+      attempts    = 0
+      backoff     = "2s"
+      max_backoff = "5s"
     }
   }
 

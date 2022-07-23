@@ -126,4 +126,10 @@ nomad-build-only:
 nomad-clean:
 	./scripts/build-nomad.sh -d
 
+#
+# run a standalone nomad dev agent with consul and vault.
+#
+nomad-dev-agent:
+	./scripts/nomad-dev-agent.sh
+
 

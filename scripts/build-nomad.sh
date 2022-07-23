@@ -53,15 +53,15 @@ if $build_binary; then
 
     # Print the built binary version.
     bolt command run "echo \"Built Nomad binary version ==>\" && nomad/pkg/linux_amd64/nomad -version" --targets=server-1
+
+    # Replace the binary in the path on all nodes.
+    # bolt command run @scripts/stop-nomad.sh --targets=devenv
+    bolt command run "sudo cp nomad/pkg/linux_amd64/nomad /usr/local/bin/nomad && echo '/usr/local/bin/nomad version ==>' && nomad -version" --targets=devenv
+
+    # Stat the binaries in output so timestamps can be compared.
+    bolt command run "echo \"Built binary stat ==> \" && stat -c '%n %y' nomad/pkg/linux_amd64/nomad && echo \"Path binary stat ==> \" && stat -c '%n %y' /usr/local/bin/nomad" --targets=devenv
+
 fi
-
-# Replace the binary in the path on all nodes.
-# bolt command run @scripts/stop-nomad.sh --targets=devenv
-bolt command run "sudo cp nomad/pkg/linux_amd64/nomad /usr/local/bin/nomad && echo '/usr/local/bin/nomad version ==>' && nomad -version" --targets=devenv
-
-# Stat the binaries in output so timestamps can be compared.
-bolt command run "echo \"Built binary stat ==> \" && stat -c '%n %y' nomad/pkg/linux_amd64/nomad && echo \"Path binary stat ==> \" && stat -c '%n %y' /usr/local/bin/nomad" --targets=devenv
-
 
 if $clean_data_dirs; then
   # Clean the data_dirs on all nodes.

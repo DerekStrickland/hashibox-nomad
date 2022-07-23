@@ -1,8 +1,32 @@
 datacenter = "dc1"
 log_level  = "TRACE"
-data_dir   = "/opt/nomad/data"
+data_dir   = "/Users/derekstrickland/nomad/data"
 
-bind_addr = "192.168.61.10"
+# See https://www.nomadproject.io/docs/faq#q-how-to-connect-to-my-host-network-when-using-docker-desktop-windows-and-macos for more information
+bind_addr = "0.0.0.0"
+# network_interface = "en0"
+
+# TODO: set this from envar since not everyone will use a mac or need to use a specific network interface
+consul {
+  address = "192.168.1.31:8500"
+}
+
+vault {
+  enabled = true
+  address = "http://127.0.0.1:8200"
+}
+
+ui {
+  enabled = true
+
+  consul {
+    ui_url = "http://127.0.0.1:8500/ui"
+  }
+
+  vault {
+    ui_url = "http://127.0.0.1:8200/ui"
+  }
+}
 
 client {
   template {
@@ -21,25 +45,19 @@ client {
     }
 
     consul_retry {
-      attempts    = 0
+      attempts    = 1
       backoff     = "2s"
       max_backoff = "5s"
     }
 
     vault_retry {
-      attempts    = 0
-      backoff     = "2s"
-      max_backoff = "5s"
-    }
-
-    nomad_retry {
-      attempts    = 0
+      attempts    = 1
       backoff     = "2s"
       max_backoff = "5s"
     }
   }
 
-  cni_path = "/opt/cni/bin"
+  # cni_path = "/opt/cni/bin"
 }
 
 plugin "docker" {
@@ -54,25 +72,4 @@ plugin "docker" {
 telemetry {
   collection_interval = "5s"
   disable_hostname    = false
-}
-
-consul {
-  address = "192.168.61.10:8500"
-}
-
-vault {
-  enabled = true
-  address = "http://192.168.60.10:8200"
-}
-
-ui {
-  enabled = true
-
-  consul {
-    ui_url = "http://192.168.60.10:8500/ui"
-  }
-
-  vault {
-    ui_url = "http://192.168.60.10:8200/ui"
-  }
 }
