@@ -8,7 +8,7 @@ bind_addr = "0.0.0.0"
 
 # TODO: set this from envar since not everyone will use a mac or need to use a specific network interface
 consul {
-  address = "192.168.1.31:8500"
+  address = "172.20.10.2:8500"
 }
 
 vault {
