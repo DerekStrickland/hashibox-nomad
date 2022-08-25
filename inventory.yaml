@@ -65,6 +65,10 @@ groups:
       - "192.168.61.10"
       - "192.168.61.20"
       - "192.168.61.30"
+      
+  - name: "debug-server"
+    targets:
+      - "192.168.60.100"
 
 config:
   transport: ssh

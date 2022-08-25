@@ -47,7 +47,7 @@ halt:
 restart: halt up
 
 #
-# destroy is a shortcut to stop and force destroy the Vagrant environment.
+# destroy is a shortcut to # and force destroy the Vagrant environment.
 #
 destroy: halt
 	vagrant destroy -f
@@ -131,5 +131,11 @@ nomad-clean:
 #
 nomad-dev-agent:
 	./scripts/nomad-dev-agent.sh
+
+#
+# push a nomad binary to the dev cluster.
+#
+nomad-push-bin:
+	./scripts/nomad-push-bin.sh $(NOMAD_BIN_PATH)
 
 
