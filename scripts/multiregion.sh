@@ -14,13 +14,13 @@ bolt command run "rm -rf /hashibox/defaults /hashibox/overrides" --targets=deven
 # Upload default configuration files for agents acting as servers. Also, upload
 # specific configuration file per node to override default behavior.
 bolt file upload ./uploads/us/_defaults/server /hashibox/defaults --targets=servers --run-as root
-bolt file upload ./uploads/devenv/192.168.60.10 /hashibox/overrides --targets=192.168.60.10 --run-as root
-bolt file upload ./uploads/devenv/192.168.60.20 /hashibox/overrides --targets=192.168.60.20 --run-as root
-bolt file upload ./uploads/devenv/192.168.60.30 /hashibox/overrides --targets=192.168.60.30 --run-as root
+bolt file upload ./uploads/multiregion/192.168.60.10 /hashibox/overrides --targets=192.168.60.10 --run-as root
+bolt file upload ./uploads/multiregion/192.168.60.20 /hashibox/overrides --targets=192.168.60.20 --run-as root
+bolt file upload ./uploads/multiregion/192.168.60.30 /hashibox/overrides --targets=192.168.60.30 --run-as root
 
 # Upload default configuration files for agents acting as clients. Also, upload
 # specific configuration file per node to override default behavior.
 bolt file upload ./uploads/us/_defaults/client /hashibox/defaults --targets=clients --run-as root
-bolt file upload ./uploads/devenv/192.168.61.10 /hashibox/overrides --targets=192.168.61.10 --run-as root
-bolt file upload ./uploads/devenv/192.168.61.20 /hashibox/overrides --targets=192.168.61.20 --run-as root
-bolt file upload ./uploads/devenv/192.168.61.30 /hashibox/overrides --targets=192.168.61.30 --run-as root
+bolt file upload ./uploads/multiregion/192.168.61.10 /hashibox/overrides --targets=192.168.61.10 --run-as root
+bolt file upload ./uploads/multiregion/192.168.61.20 /hashibox/overrides --targets=192.168.61.20 --run-as root
+bolt file upload ./uploads/multiregion/192.168.61.30 /hashibox/overrides --targets=192.168.61.30 --run-as root

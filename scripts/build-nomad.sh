@@ -2,7 +2,7 @@
 
 ################################################################################
 # Usage:
-#   build-nomad.sh [--b <rebuild binary>] [--d <clean data_dirs>]
+#   build-nomad.sh [--b <rebuild binary>] [--d <clean data_dirs>] [--e build enterprise binary]
 #   This script will build nomad binary and clean data_dirs on all nodes.
 #   It is intended to be called by make targets that handle setting the
 #   correct flags for different scenarios.
@@ -10,14 +10,18 @@
 
 build_binary=false
 clean_data_dirs=false
+build_ent=false
 
-while getopts 'bd' OPTION; do
+while getopts 'bde' OPTION; do
   case "$OPTION" in
     b)
       build_binary=true
       ;;
     d)
       clean_data_dirs=true
+      ;;
+    e)
+      build_ent=true
       ;;
     ?)
       echo "script usage: $(basename \$0) [-b build binary] [-d clean data dir]" >&2
@@ -40,26 +44,28 @@ bolt command run "sudo systemctl stop nomad" --targets=devenv
 
 # Build the Nomad binary on the host machine.
 if $build_binary; then
-    if [[ ${NOMAD_SRC:-"unset"} == "unset" ]]; then
-        echo 'NOMAD_SRC environment variable not set.'
-        exit 1
+    src_dir="nomad"
+    if $build_ent; then
+        src_dir="nomad-enterprise"
     fi
 
     # Print the current git ref.
-    (cd $NOMAD_SRC && echo "Dev git ref ===>" && git rev-parse HEAD)
-
+    # (cd $NOMAD_SRC && echo "Dev git ref ===>" && git rev-parse HEAD)
+    bolt command run "cd $src_dir && echo \"Dev git ref ===>\" && git rev-parse HEAD" --targets=server-1
+    
     # Build the Nomad binary.
-    (cd $NOMAD_SRC && GOOS=linux GOARCH=amd64 make dev)
+    # (cd $NOMAD_SRC && GOOS=linux GOARCH=amd64 make dev)
+    bolt command run "cd $src_dir && make dev" --targets=server-1
 
     # Print the built binary version.
-    bolt command run "echo \"Built Nomad binary version ==>\" && nomad/pkg/linux_amd64/nomad -version" --targets=server-1
+    bolt command run "echo \"Built Nomad binary version ==>\" && ${src_dir}/bin/nomad -version" --targets=server-1
 
     # Replace the binary in the path on all nodes.
     # bolt command run @scripts/stop-nomad.sh --targets=devenv
-    bolt command run "sudo cp nomad/pkg/linux_amd64/nomad /usr/local/bin/nomad && echo '/usr/local/bin/nomad version ==>' && nomad -version" --targets=devenv
+    bolt command run "sudo cp ${src_dir}/bin/nomad /usr/local/bin/nomad && echo '/usr/local/bin/nomad version ==>' && nomad -version" --targets=devenv
 
     # Stat the binaries in output so timestamps can be compared.
-    bolt command run "echo \"Built binary stat ==> \" && stat -c '%n %y' nomad/pkg/linux_amd64/nomad && echo \"Path binary stat ==> \" && stat -c '%n %y' /usr/local/bin/nomad" --targets=devenv
+    bolt command run "echo \"Built binary stat ==> \" && stat -c '%n %y' ${src_dir}/bin/nomad && echo \"Path binary stat ==> \" && stat -c '%n %y' /usr/local/bin/nomad" --targets=devenv
 
 fi
 

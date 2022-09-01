@@ -12,6 +12,12 @@ Vagrant.configure(2) do |config|
         config.vm.synced_folder nomad_src, "/home/vagrant/nomad"
     end
 
+    # Attach the enterprise source code.
+    nomad_ent_src = ENV["NOMAD_ENT_SRC"]
+    if nomad_ent_src != '' 
+        config.vm.synced_folder nomad_ent_src, "/home/vagrant/nomad-enterprise"
+    end
+
     # The base hashibox config should not use this ip address.
     # You may need to override this if you are running hashibox
     # at the same time and have more than 3 servers.

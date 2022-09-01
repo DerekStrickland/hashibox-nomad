@@ -102,6 +102,17 @@ devconfig:
 	sleep 5
 	./scripts/unseal.sh	
 
+# switch configuration to use multiregion dev environment settings
+# this is an analog to sync but for the dev environment
+#
+multiregion:
+	./scripts/multiregion.sh
+	./scripts/dotenv.sh
+	./scripts/restart.sh
+	sleep 5
+	./scripts/unseal.sh	
+	./scripts/multiregion-join.sh
+
 #
 # install Nomad development environment dependencies 
 #
@@ -113,6 +124,13 @@ nomad-deps:
 #
 nomad-build:
 	./scripts/build-nomad.sh -b -d
+
+#
+# update the nomad binary on all nodes and clean the data directory.
+#
+nomad-build-ent:
+	./scripts/dotenv.sh
+	./scripts/build-nomad.sh -b -d -e
 
 #
 # update the nomad binary on all nodes and without cleaning the data directory.
