@@ -1,4 +1,5 @@
-datacenter = "dc1"
+region     = "west"
+datacenter = "dc2"
 log_level  = "TRACE"
 data_dir   = "/opt/nomad/data"
 
