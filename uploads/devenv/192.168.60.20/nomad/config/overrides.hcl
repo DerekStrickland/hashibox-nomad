@@ -4,6 +4,10 @@ data_dir   = "/opt/nomad/data"
 
 bind_addr = "192.168.60.20"
 
+// acl {
+//   enabled = true
+// }
+
 consul {
   address = "192.168.60.20:8500"
 }

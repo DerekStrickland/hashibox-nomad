@@ -5,6 +5,11 @@ data_dir   = "/opt/nomad/data"
 bind_addr = "192.168.61.10"
 
 client {
+
+  meta {
+    machine-role = "admin-server"
+  }
+
   template {
     error_mode       = "noop"
     max_stale        = "0s"
