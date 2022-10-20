@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "pushing bin $1"
+
 if [ -z "$1" ]
   then
     echo "No path to bindary provided"
